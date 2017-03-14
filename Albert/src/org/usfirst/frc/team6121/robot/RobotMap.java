@@ -1,5 +1,8 @@
 package org.usfirst.frc.team6121.robot;
 
+import com.ctre.CANTalon;
+import com.ctre.CANTalon.FeedbackDevice;
+
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -44,13 +47,6 @@ public class RobotMap {
 	public static final int SHOOTER_MOTOR = 4;
 	public static final int BALL_INTAKE_MOTOR = 5;
 	public static final int AGITATOR_MOTOR = 5;
-
-	/************ Sensors **********/
-	
-	public static final int SHOOT_ENCODER_A = 0;
-	public static final int SHOOT_ENCODER_B = 0;
-	
-//	public static Encoder shooter;
 	
 	/******* PID CONSTANTS *********/
 	 
@@ -65,7 +61,7 @@ public class RobotMap {
 	public static SpeedController frMotor;
 	public static SpeedController rrMotor;
 	
-	public static SpeedController shooterMotor;
+	public static CANTalon shooterMotor;
 	public static SpeedController ballIntakeMotor;
 	public static SpeedController agitator;
 	
@@ -74,19 +70,26 @@ public class RobotMap {
 	
 	public static void init() {
 		
-		shooterMotor = new Spark(SHOOTER_MOTOR);
-//		ballIntakeMotor = new Victor(BALL_INTAKE_MOTOR);
+		shooterMotor = new CANTalon(SHOOTER_MOTOR);
+		ballIntakeMotor = new Victor(BALL_INTAKE_MOTOR);
 		agitator = new Spark(AGITATOR_MOTOR);
-	
+		
+		shooterMotor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		shooterMotor.reverseSensor(false);
+		shooterMotor.configNominalOutputVoltage(+0.0f, -0.0f);
+		shooterMotor.configPeakOutputVoltage(+12.0f, -12.0f);
+		shooterMotor.setProfile(0);
+		shooterMotor.setF(0);
+		shooterMotor.setP(0);
+		shooterMotor.setI(0);
+		shooterMotor.setD(0);
+		
 		flMotor = new Victor(FRONT_LEFT_MOTOR);
 		rlMotor = new Victor(BACK_LEFT_MOTOR);
 		frMotor = new Victor(FRONT_RIGHT_MOTOR);
 		rrMotor = new Victor(BACK_RIGHT_MOTOR);
 		
 		drive = new RobotDrive(flMotor, rlMotor, frMotor, rrMotor);
-		
-//		shooter = new Encoder(SHOOT_ENCODER_A, SHOOT_ENCODER_B, false, Encoder.EncodingType.k4X);
-//		shooter.setDistancePerPulse(4 * Math.PI);
 	
 	}
 }
