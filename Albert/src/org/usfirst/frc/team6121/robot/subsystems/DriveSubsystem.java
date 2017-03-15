@@ -17,7 +17,7 @@ public class DriveSubsystem extends Subsystem {
     public void arcadeDrive(Joystick stick) {
     	double x = stick.getRawAxis(RobotMap.X_AXIS);
     	double y = stick.getRawAxis(RobotMap.Y_AXIS) * (stick.getRawAxis(RobotMap.R_TRIGGER) + 0.5);
-    	RobotMap.drive.arcadeDrive(y, -x, false);
+    	RobotMap.drive.arcadeDrive(y, x, false);
     }
     
     /**

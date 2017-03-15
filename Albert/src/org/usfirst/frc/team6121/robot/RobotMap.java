@@ -44,9 +44,9 @@ public class RobotMap {
 	public static int FRONT_RIGHT_MOTOR = 2;
 	public static int BACK_RIGHT_MOTOR = 3;
 
-	public static final int SHOOTER_MOTOR = 4;
+	public static final int SHOOTER_MOTOR = 1;
 	public static final int BALL_INTAKE_MOTOR = 5;
-	public static final int AGITATOR_MOTOR = 5;
+	public static final int AGITATOR_MOTOR = 6;
 	
 	/******* PID CONSTANTS *********/
 	 

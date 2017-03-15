@@ -27,9 +27,11 @@ public class VisionSubsystem extends Subsystem {
 	
 	public Thread visionThread = new Thread(() -> {
 		// Get the UsbCamera from CameraServer
-		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture(1);
+		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture(0);
+		UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(1);
 		// Set the resolution
 		CameraServer.getInstance().startAutomaticCapture(camera);
+		CameraServer.getInstance().startAutomaticCapture(camera1);
 
 		camera.setResolution(320, 240);
 		camera.setBrightness(0);
@@ -39,14 +41,17 @@ public class VisionSubsystem extends Subsystem {
 
 		// Get a CvSink. This will capture Mats from the camera
 		CvSink cvSink = CameraServer.getInstance().getVideo();
+		CvSink cvSink1 = CameraServer.getInstance().getVideo();
 		
 		// Setup a CvSource. This will send images back to the Dashboard
 		CvSource outputStream = CameraServer.getInstance().putVideo("Vision Camera", 320, 240);
+		CvSource outputStream1 = CameraServer.getInstance().putVideo("Utility Camera", 320, 240);
 		
 		
 
 		// Mats are very memory expensive. Lets reuse this Mat.
 		Mat mat = new Mat();
+		Mat mat1 = new Mat();
 
 		// This cannot be 'true'. The program will never exit if it is. This
 		// lets the robot stop this thread when restarting robot code or
@@ -54,9 +59,10 @@ public class VisionSubsystem extends Subsystem {
 		while (!Thread.interrupted()) {
 			// Tell the CvSink to grab a frame from the camera and put it
 			// in the source mat.  If there is an error notify the output.
-			if (cvSink.grabFrame(mat) == 0) {
+			if (cvSink.grabFrame(mat) == 0 || cvSink1.grabFrame(mat1) == 0) {
 				// Send the output the error.
 				outputStream.notifyError(cvSink.getError());
+				outputStream1.notifyError(cvSink1.getError());
 				// skip the rest of the current iteration
 				continue;
 				
@@ -85,6 +91,7 @@ public class VisionSubsystem extends Subsystem {
 			
 			// Give the output stream a new image to display
 			outputStream.putFrame(mat);
+			outputStream1.putFrame(mat1);
 		}
 	});
 	

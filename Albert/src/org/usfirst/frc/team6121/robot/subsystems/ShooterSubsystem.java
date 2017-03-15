@@ -42,6 +42,8 @@ public class ShooterSubsystem extends Subsystem {
     
     public void setSpeed(double a) {
     	RobotMap.shooterMotor.set(a);
+    	double motorOutput = RobotMap.shooterMotor.getOutputVoltage() / RobotMap.shooterMotor.getBusVoltage();
+    	printShooter(motorOutput);
     }
     
     public void setRPM(double a) {
@@ -68,6 +70,25 @@ public class ShooterSubsystem extends Subsystem {
         _sb.append(RobotMap.shooterMotor.getClosedLoopError());
         _sb.append("\ttrg:");
         _sb.append(targetSpeed);
+        
+    	if(++_loops >= 10) {
+    		_loops = 0;
+    		SmartDashboard.putString("Shooter data: ", _sb.toString());
+    	}
+    	_sb.setLength(0);
+    }
+    
+    public void printShooter(double motorOutput) {
+
+    	/* prepare line to print */
+		_sb.append("\tout:");
+		_sb.append(motorOutput);
+        _sb.append("\tspd:");
+        _sb.append(RobotMap.shooterMotor.getSpeed());
+
+        /* append more signals to print when in speed mode. */
+        _sb.append("\terr:");
+        _sb.append(RobotMap.shooterMotor.getClosedLoopError());
         
     	if(++_loops >= 10) {
     		_loops = 0;
