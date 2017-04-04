@@ -8,29 +8,32 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class AimGear extends Command {
-	boolean delivered = false;
+public class DriveStraight extends Command {
+	private double m_time;
+	private double m_speed;
 
-    public AimGear() {
+    public DriveStraight(double time, double speed) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
+    	requires(Robot.driveSubsystem);
+    	m_time = time;
+    	m_speed = speed;
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	delivered = false;
+    	setTimeout(m_time);
     	RobotMap.gyro.reset();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-		Robot.VISION.printVision();
-		Robot.driveSubsystem.toHeading(Robot.VISION.getTurn());
+    	Robot.driveSubsystem.driveStraight(m_speed);
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-        return Robot.driveSubsystem.isAimed(Robot.VISION.getTurn());
+        return isTimedOut();
     }
 
     // Called once after isFinished returns true

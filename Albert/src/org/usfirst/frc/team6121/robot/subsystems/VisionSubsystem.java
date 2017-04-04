@@ -95,10 +95,10 @@ public class VisionSubsystem extends Subsystem {
 		}
 	});
 	
-	final double bH = 10/12;
-	final double gH = 5/12;
-	final double fovP = 240;
-	final double camVertAngle = 34.3; //TODO: Check the vertical camera angle
+	private static final double bH = 10/12;
+	private static final double fovP = 240;
+	private static final double camVertAngle = 34.3; //TODO: Check the vertical camera angle
+	private static final int gearOff = 6; //TODO: Check gear offset
 	double tP;
 	
 	public enum Target {
@@ -239,7 +239,8 @@ public class VisionSubsystem extends Subsystem {
 		return d;
     }
     
-    public double getCenterX(Target t) {
+    public double getCenterX() {
+    	Target t = getTarget();
     	if (t == Target.Boiler) {
     		return X.get(0) + width.get(0) / 2;
     	} else if (t == Target.Gear) {
@@ -249,7 +250,8 @@ public class VisionSubsystem extends Subsystem {
     	}
     }
     
-    public double getWidth(Target t) {
+    public double getWidth() {
+    	Target t = getTarget();
     	if (t == Target.Boiler) {
     		return width.get(0);
     	} else if (t == Target.Gear) {
@@ -257,6 +259,11 @@ public class VisionSubsystem extends Subsystem {
     	} else {
     		return 0;
     	}
+    }
+    
+    public double getTurn() {
+    	return Math.asin((160 - getCenterX())/getDistance()) + 
+    			(90 - (Math.asin(Math.sqrt(getDistance()*getDistance() - gearOff*gearOff)/getDistance())));
     }
 	
 	public void initDefaultCommand() {

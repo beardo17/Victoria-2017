@@ -3,6 +3,7 @@ package org.usfirst.frc.team6121.robot;
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -65,6 +66,8 @@ public class RobotMap {
 	public static SpeedController ballIntakeMotor;
 	public static SpeedController agitator;
 	
+	public static ADXRS450_Gyro gyro;
+	
 	
 	public static RobotDrive drive;
 	
@@ -90,6 +93,9 @@ public class RobotMap {
 		rrMotor = new Victor(BACK_RIGHT_MOTOR);
 		
 		drive = new RobotDrive(flMotor, rlMotor, frMotor, rrMotor);
+		
+		gyro = new ADXRS450_Gyro();
+		gyro.reset();
 	
 	}
 }

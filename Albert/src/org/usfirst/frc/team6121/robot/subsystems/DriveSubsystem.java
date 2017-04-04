@@ -1,10 +1,14 @@
 package org.usfirst.frc.team6121.robot.subsystems;
 
+import org.usfirst.frc.team6121.robot.Robot;
 import org.usfirst.frc.team6121.robot.RobotMap;
 import org.usfirst.frc.team6121.robot.commands.ArcadeDrive;
+import org.usfirst.frc.team6121.robot.subsystems.VisionSubsystem.Target;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  *
@@ -13,7 +17,9 @@ public class DriveSubsystem extends Subsystem {
 
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
-    
+
+	private static final double Kp = 0.05;
+	
     public void arcadeDrive(Joystick stick) {
     	double x = stick.getRawAxis(RobotMap.X_AXIS);
     	double y = stick.getRawAxis(RobotMap.Y_AXIS) * (stick.getRawAxis(RobotMap.R_TRIGGER) + 0.5);
@@ -35,6 +41,42 @@ This function will most likely be used in an autonomous routine.
     
     public void turn(double l, double r) {
     	RobotMap.drive.tankDrive(l, r, false);
+    }
+    
+    public void toHeading(double h) {
+    	double x = RobotMap.gyro.getAngle();
+    	SmartDashboard.putNumber("Gyro Heading: ", x);
+    	if (Robot.VISION.getTarget() != Target.None) {
+    		if (x - h > 0.5) {
+    			turn(0.25, -0.25);
+    		} else if (x - h < 0.5) {
+    			turn(-0.25, 0.25);
+    		} else {
+    			turn(0, 0);
+    		}
+    	} else {
+    		turn(-0.25, 0.25);
+    	}
+    }
+
+    public boolean isAimed(double h) {
+    	double x = RobotMap.gyro.getAngle();
+    	if (Robot.VISION.getTarget() != Target.None) {
+    		if (x - h > 0.5 || x - h < 0.5) {
+    			return false;
+    		} else {
+    			return true;
+    		}
+    	} else {
+    		return false;
+    	}
+    }
+    
+    public void driveStraight(double speed) {
+    	double angle = RobotMap.gyro.getAngle();
+    	SmartDashboard.putNumber("Gyro Heading: ", angle);
+    	drive(speed, angle * Kp);
+    	Timer.delay(0.004);
     }
     
     public void initDefaultCommand() {

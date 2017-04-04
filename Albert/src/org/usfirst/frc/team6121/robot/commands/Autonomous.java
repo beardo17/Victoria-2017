@@ -30,7 +30,11 @@ public class Autonomous extends CommandGroup {
     					addSequential(new Shooting());
     					break;
     				case GEAR:
-    					addSequential(new Drive(0.5, 0.0025569325, 1)); // To the peg
+    					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
+    					addSequential(new AimGear());
+    					addSequential(new DriveStraight(0.5, 0.4));
+    					addSequential(new WaitCommand(5));
+    					addSequential(new DriveStraight(1, -0.25));
 //    					addSequential(new GearDeliver());
     					break;
     				case WIN: //TODO: Fix the going to the hopper and stuff
@@ -51,8 +55,9 @@ public class Autonomous extends CommandGroup {
 			case MID:
 				switch(strat) {
 				case GEAR:
-					addSequential(new Drive(0.5, 0.0, 1)); // To the peg
-//					addSequential(new GearDeliver());
+					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
+					addSequential(new WaitCommand(5));
+					addSequential(new DriveStraight(1, -0.25));
 					break;
 				case SHOOT:
 					addSequential(new Drive(0.5, 0.6065306597, 1.25)); // Turn for the boiler
@@ -75,7 +80,11 @@ public class Autonomous extends CommandGroup {
 			case RIGHT:
 				switch(strat) {
 				case GEAR:
-					addSequential(new Drive(0.5, -0.0025569325, 1.25)); // To the peg
+					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
+					addSequential(new AimGear());
+					addSequential(new DriveStraight(0.5, 0.4));
+					addSequential(new WaitCommand(5));
+					addSequential(new DriveStraight(1, -0.25));
 //					addSequential(new GearDeliver());
 					break;
 				case SHOOT:
@@ -110,7 +119,11 @@ public class Autonomous extends CommandGroup {
 					addSequential(new Shooting());
 					break;
 				case GEAR:
-					addSequential(new Drive(0.5, -0.0025569325, 0.5));  // To the peg
+					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
+					addSequential(new AimGear());
+					addSequential(new DriveStraight(0.5, 0.4));
+					addSequential(new WaitCommand(5));
+					addSequential(new DriveStraight(1, -0.25));
 //					addSequential(new GearDeliver());
 					break;
 				case WIN:
@@ -128,8 +141,9 @@ public class Autonomous extends CommandGroup {
 			case MID:
 				switch(strat) {
 				case GEAR:
-					addSequential(new Drive(0.5, 0, 0.5)); // To the peg
-//					addSequential(new GearDeliver());
+					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
+					addSequential(new WaitCommand(5));
+					addSequential(new DriveStraight(1, -0.25));
 					break;
 				case SHOOT:
 					addSequential(new Drive(0.5, -0.6065306597, 1.25)); // Turn for the boiler
@@ -151,7 +165,11 @@ public class Autonomous extends CommandGroup {
 			case RIGHT:
 				switch(strat) {
 				case GEAR:
-					addSequential(new Drive(0.5, 0.0025569325, 0.5)); // To the peg
+					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
+					addSequential(new AimGear());
+					addSequential(new DriveStraight(0.5, 0.4));
+					addSequential(new WaitCommand(5));
+					addSequential(new DriveStraight(1, -0.25));
 //					addSequential(new GearDeliver());
 					break;
 				case SHOOT:

@@ -28,9 +28,9 @@ public class ShooterSubsystem extends Subsystem {
     public double aimValue() {
     	double c = 0;
     	if (v.getTarget() == Target.Boiler) {
-    		c = (v.getWidth(Target.Boiler) * xShooterOffset / 15) + v.getCenterX(Target.Boiler);
+    		c = (v.getWidth() * xShooterOffset / 15) + v.getCenterX();
     	} else if (v.getTarget() == Target.Gear) {
-    		c = (v.getWidth(Target.Gear) * xGearOffset / 10.25) + v.getCenterX(Target.Gear);
+    		c = (v.getWidth() * xGearOffset / 10.25) + v.getCenterX();
     	}
 		return c;
     }
