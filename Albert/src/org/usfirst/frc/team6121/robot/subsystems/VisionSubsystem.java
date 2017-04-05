@@ -143,24 +143,28 @@ public class VisionSubsystem extends Subsystem {
     		Target target = Target.None;
     		double blRatio, bhRatio, bwRatio, blScore, bhScore, bwScore;
     		double gtRatio = 0, ghRatio = 0, gwRatio = 0, gtScore, ghScore, gwScore;
+    		ArrayList<Integer> YLocal;
+    		ArrayList<Integer> XLocal;
+    		ArrayList<Integer> widthLocal;
+    		ArrayList<Integer> heightLocal;
     		synchronized(YLock){
-    			ArrayList<Integer> YLocal = (ArrayList<Integer>) Y.clone();
+    			YLocal = (ArrayList<Integer>) Y.clone();
     		}
     		
     		synchronized(XLock){
-    			ArrayList<Integer> XLocal = (ArrayList<Integer>) X.clone();
+    			XLocal = (ArrayList<Integer>) X.clone();
     		}
     		
     		synchronized(widthLock){
-    			ArrayList<Integer> widthLocal = (ArrayList<Integer>) Y.clone();
+    			widthLocal = (ArrayList<Integer>) Y.clone();
     		}
     		
     		synchronized(heightLock){
-    			ArrayList<Integer> heightLocal = (ArrayList<Integer>) Y.clone();
+    			heightLocal = (ArrayList<Integer>) Y.clone();
     		}
     		
     		if (Robot.vision.filterContoursOutput().size() > 1) {
-    			for (int i = 0; i < Y.size() - 1; i++) {
+    			for (int i = 0; i < YLocal.size() - 1; i++) {
     				blRatio = ((X.get(i) - X.get(i+1)) / X.get(i) + 1);
     				bhRatio = (height.get(i) / (height.get(i+1) * 2));
     				bwRatio = (width.get(i) / width.get(i+1));
@@ -237,21 +241,26 @@ public class VisionSubsystem extends Subsystem {
     public double getTargetHeight(Target t) {
     	double h = 0;
     	double T = 0, B = 0;
+		ArrayList<Integer> YLocal;
+		ArrayList<Integer> XLocal;
+		ArrayList<Integer> widthLocal;
+		ArrayList<Integer> heightLocal;
 		synchronized(YLock){
-			ArrayList<Integer> YLocal = (ArrayList<Integer>) Y.clone();
+			YLocal = (ArrayList<Integer>) Y.clone();
 		}
 		
 		synchronized(XLock){
-			ArrayList<Integer> XLocal = (ArrayList<Integer>) X.clone();
+			XLocal = (ArrayList<Integer>) X.clone();
 		}
 		
 		synchronized(widthLock){
-			ArrayList<Integer> widthLocal = (ArrayList<Integer>) Y.clone();
+			widthLocal = (ArrayList<Integer>) Y.clone();
 		}
 		
 		synchronized(heightLock){
-			ArrayList<Integer> heightLocal = (ArrayList<Integer>) Y.clone();
+			heightLocal = (ArrayList<Integer>) Y.clone();
 		}
+		
     	if (targets.length > 1) {
     		for (int i = 0; i < targets.length; i++) {
     			switch (t) {
@@ -294,21 +303,26 @@ public class VisionSubsystem extends Subsystem {
     }
     
     public double getCenterX() {
+		ArrayList<Integer> YLocal;
+		ArrayList<Integer> XLocal;
+		ArrayList<Integer> widthLocal;
+		ArrayList<Integer> heightLocal;
 		synchronized(YLock){
-			ArrayList<Integer> YLocal = (ArrayList<Integer>) Y.clone();
+			YLocal = (ArrayList<Integer>) Y.clone();
 		}
 		
 		synchronized(XLock){
-			ArrayList<Integer> XLocal = (ArrayList<Integer>) X.clone();
+			XLocal = (ArrayList<Integer>) X.clone();
 		}
 		
 		synchronized(widthLock){
-			ArrayList<Integer> widthLocal = (ArrayList<Integer>) Y.clone();
+			widthLocal = (ArrayList<Integer>) Y.clone();
 		}
 		
 		synchronized(heightLock){
-			ArrayList<Integer> heightLocal = (ArrayList<Integer>) Y.clone();
+			heightLocal = (ArrayList<Integer>) Y.clone();
 		}
+		
     	Target t = getTarget();
     	if (t == Target.Boiler) {
     		return X.get(0) + width.get(0) / 2;
@@ -320,21 +334,26 @@ public class VisionSubsystem extends Subsystem {
     }
     
     public double getWidth() {
+		ArrayList<Integer> YLocal;
+		ArrayList<Integer> XLocal;
+		ArrayList<Integer> widthLocal;
+		ArrayList<Integer> heightLocal;
 		synchronized(YLock){
-			ArrayList<Integer> YLocal = (ArrayList<Integer>) Y.clone();
+			YLocal = (ArrayList<Integer>) Y.clone();
 		}
 		
 		synchronized(XLock){
-			ArrayList<Integer> XLocal = (ArrayList<Integer>) X.clone();
+			XLocal = (ArrayList<Integer>) X.clone();
 		}
 		
 		synchronized(widthLock){
-			ArrayList<Integer> widthLocal = (ArrayList<Integer>) Y.clone();
+			widthLocal = (ArrayList<Integer>) Y.clone();
 		}
 		
 		synchronized(heightLock){
-			ArrayList<Integer> heightLocal = (ArrayList<Integer>) Y.clone();
+			heightLocal = (ArrayList<Integer>) Y.clone();
 		}
+		
     	Target t = getTarget();
     	if (t == Target.Boiler) {
     		return width.get(0);
