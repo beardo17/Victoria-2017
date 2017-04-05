@@ -165,7 +165,7 @@ public class Autonomous extends CommandGroup {
 			case RIGHT:
 				switch(strat) {
 				case GEAR:
-					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
+					addSequential(new DriveStraight(1.5, 0.45)); // To the peg   2487628502
 					addSequential(new AimGear());
 					addSequential(new DriveStraight(0.5, 0.4));
 					addSequential(new WaitCommand(5));

@@ -24,6 +24,12 @@ public class VisionSubsystem extends Subsystem {
 	private ArrayList<Integer> width = new ArrayList<Integer>();
 	private ArrayList<Integer> height = new ArrayList<Integer>();
 	int[] targets = new int[3];
+
+	private final Object XLock = new Object();
+	private final Object YLock = new Object();
+	private final Object widthLock = new Object();
+	private final Object heightLock = new Object();
+	
 	
 	public Thread visionThread = new Thread(() -> {
 		// Get the UsbCamera from CameraServer
@@ -74,16 +80,22 @@ public class VisionSubsystem extends Subsystem {
 				SmartDashboard.putNumber("Number of Contours", Robot.vision.filterContoursOutput().size());
 				final MatOfPoint contour = Robot.vision.filterContoursOutput().get(i);
 				final Rect bb = Imgproc.boundingRect(contour);
-
-				Y.add(i, bb.y);
-				X.add(i, bb.x);
-				width.add(i, bb.width);
-				height.add(i, bb.height);
 				
-//				Y.remove(Robot.vision.filterContoursOutput().size() - 1);
-//				X.remove(Robot.vision.filterContoursOutput().size() - 1);
-//				width.remove(Robot.vision.filterContoursOutput().size() - 1);
-//				height.remove(Robot.vision.filterContoursOutput().size() - 1);
+				synchronized (YLock) {
+					Y.add(i, bb.y);
+				}
+				
+				synchronized (XLock) {
+					X.add(i, bb.x);
+				}
+				
+				synchronized (widthLock) {
+					width.add(i, bb.width);
+				}
+				
+				synchronized (heightLock) {
+					height.add(i, bb.height);
+				}
 				
 				Imgproc.rectangle(mat, new Point(X.get(i), Y.get(i)), new Point((X.get(i) + width.get(i)) , (Y.get(i) + height.get(i))),
 						new Scalar(255, 255, 255), 5);	
@@ -127,58 +139,83 @@ public class VisionSubsystem extends Subsystem {
      * @return The target seen by the camera. Returns NONE if there is no valid target
      */
     public Target getTarget() {
-    	Target target = Target.None;
-    	double blRatio, bhRatio, bwRatio, blScore, bhScore, bwScore;
-    	double gtRatio = 0, ghRatio = 0, gwRatio = 0, gtScore, ghScore, gwScore;
-    	if (Robot.vision.filterContoursOutput().size() > 0) {
-    		for (int i = 0; i < Y.size() - 1; i++) {
-    			blRatio = ((X.get(i) - X.get(i+1)) / X.get(i) + 1);
-    			bhRatio = (height.get(i) / (height.get(i+1) * 2));
-    			bwRatio = (width.get(i) / width.get(i+1));
-    			
-    			blScore = (100 - (100 * Math.abs(1-blRatio)));
-    			bhScore = (100 - (100 * Math.abs(1-bhRatio)));
-    			bwScore = (100 - (100 * Math.abs(1-bwRatio)));
-    			
-    			if (blScore + bhScore + bwScore >= 250) {
-    				target = Target.Boiler;
-    				targets[0] = i;
-    				targets[1] = i + 1;
-    				break;
-    			}
-    			
-    			if (Math.abs(X.get(i) - X.get(i+1)) <= 5) {
-    				if (((height.get(i) + height.get(i+1)) / 2 + (Y.get(i) + Y.get(i+1)) / 2) - (height.get(i+2) / 2 + Y.get(i+2)) >= 5) {
-    					gtRatio = ((Y.get(i) - Y.get(i+2)) / Y.get(i+2));
-    					gwRatio = (width.get(i) / width.get(i+2));
-    					ghRatio = (Y.get(i) - Y.get(i+1)) / (height.get(i+2));
+    	try {
+    		Target target = Target.None;
+    		double blRatio, bhRatio, bwRatio, blScore, bhScore, bwScore;
+    		double gtRatio = 0, ghRatio = 0, gwRatio = 0, gtScore, ghScore, gwScore;
+    		synchronized(YLock){
+    			ArrayList<Integer> YLocal = (ArrayList<Integer>) Y.clone();
+    		}
+    		
+    		synchronized(XLock){
+    			ArrayList<Integer> XLocal = (ArrayList<Integer>) X.clone();
+    		}
+    		
+    		synchronized(widthLock){
+    			ArrayList<Integer> widthLocal = (ArrayList<Integer>) Y.clone();
+    		}
+    		
+    		synchronized(heightLock){
+    			ArrayList<Integer> heightLocal = (ArrayList<Integer>) Y.clone();
+    		}
+    		
+    		if (Robot.vision.filterContoursOutput().size() > 1) {
+    			for (int i = 0; i < Y.size() - 1; i++) {
+    				blRatio = ((X.get(i) - X.get(i+1)) / X.get(i) + 1);
+    				bhRatio = (height.get(i) / (height.get(i+1) * 2));
+    				bwRatio = (width.get(i) / width.get(i+1));
+    				
+    				blScore = (100 - (100 * Math.abs(1-blRatio)));
+    				bhScore = (100 - (100 * Math.abs(1-bhRatio)));
+    				bwScore = (100 - (100 * Math.abs(1-bwRatio)));
+    				
+    				if (blScore + bhScore + bwScore >= 250) {
+    					target = Target.Boiler;
+    					targets[0] = i;
+    					targets[1] = i + 1;
+    					break;
     				}
-    			} else if (Math.abs(X.get(i+1) - X.get(i+2)) <= 5) {
-    				if (((height.get(i+1) + height.get(i+2)) / 2 + (Y.get(i+1) + Y.get(i+2)) / 2) - (height.get(i) / 2 + Y.get(i)) >= 5) {
-    					gtRatio = ((Y.get(i+1) - Y.get(i+2)) / Y.get(i));
-    					gwRatio = (width.get(i) / width.get(i+2));
-    					ghRatio = (Y.get(i+2) - Y.get(i+1)) / (height.get(i));
-    				}
-    			} else {
-    				gtRatio = ((Y.get(i) - Y.get(i+1)) / height.get(i) + 1);
-    				gwRatio = (width.get(i) / width.get(i+1));
-    				ghRatio = (height.get(i) / height.get(i+1));
-    			}
     			
-    			gtScore = (100 - (100 * Math.abs(1-gtRatio)));
-    			ghScore = (100 - (100 * Math.abs(1-ghRatio)));
-    			gwScore = (100 - (100 * Math.abs(1-gwRatio)));
+    				if (Math.abs(X.get(i) - X.get(i+1)) <= 5 && Robot.vision.filterContoursOutput().size() > 2) {
+    					if (((height.get(i) + height.get(i+1)) / 2 + (Y.get(i) + Y.get(i+1)) / 2) - (height.get(i+2) / 2 + Y.get(i+2)) >= 5) {
+    						gtRatio = ((Y.get(i) - Y.get(i+2)) / Y.get(i+2));
+    						gwRatio = (width.get(i) / width.get(i+2));
+    						ghRatio = (Y.get(i) - Y.get(i+1)) / (height.get(i+2));
+    					}	
+    				} else if (Robot.vision.filterContoursOutput().size() > 2 && Math.abs(X.get(i+1) - X.get(i+2)) <= 5) {
+    					if (((height.get(i+1) + height.get(i+2)) / 2 + (Y.get(i+1) + Y.get(i+2)) / 2) - (height.get(i) / 2 + Y.get(i)) >= 5) {
+    						gtRatio = ((Y.get(i+1) - Y.get(i+2)) / Y.get(i));
+    						gwRatio = (width.get(i) / width.get(i+2));
+    						ghRatio = (Y.get(i+2) - Y.get(i+1)) / (height.get(i));
+    					}	
+    				} else {
+    					gtRatio = ((Y.get(i) - Y.get(i+1)) / height.get(i) + 1);
+    					gwRatio = (width.get(i) / width.get(i+1));
+    					ghRatio = (height.get(i) / height.get(i+1));
+    				}	
     			
-    			if (gtScore + ghScore + gwScore >= 250) {
-    				target = Target.Gear;
-    				targets[0] = i;
-    				targets[1] = i + 1;
-    				targets[2] = i + 2;
-    				break;
+    				gtScore = (100 - (100 * Math.abs(1-gtRatio)));
+    				ghScore = (100 - (100 * Math.abs(1-ghRatio)));
+    				gwScore = (100 - (100 * Math.abs(1-gwRatio)));
+    				
+    				if (gtScore + ghScore + gwScore >= 250) {
+    					target = Target.Gear;
+    					targets[0] = i;
+    					targets[1] = i + 1;
+    					targets[2] = i + 2;
+    					break;
+    				}	
     			}
     		}
+    		return target;
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		System.out.println(Y);
+    		System.out.println(X);
+    		System.out.println(width);
+    		System.out.println(height);
     	}
-		return target;
+    	return Target.None;
     }
     
     public String getTargetString() {
@@ -200,23 +237,40 @@ public class VisionSubsystem extends Subsystem {
     public double getTargetHeight(Target t) {
     	double h = 0;
     	double T = 0, B = 0;
-    	for (int i = 0; i < targets.length; i++) {
-    		switch (t) {
-    		case Boiler:
-    			//TODO: Fix this stuff
-    			break;
-    		case Gear:
-    			if (Math.abs(X.get(i) - X.get(i+1)) <= 5) {
-    				T = (Y.get(targets[i]) + height.get(targets[i]) / 2);
-    				B = (Y.get(targets[i+1]) + height.get(targets[i+1]) / 2);
-    			} else if (Math.abs(X.get(i+1) - X.get(i+2)) <= 5) {
-    				T = (Y.get(targets[i]) + height.get(targets[i]) / 2);
-    				B = (Y.get(targets[i]) + height.get(targets[i]) / 2);
-    			} else {
-    				return height.get(i);
+		synchronized(YLock){
+			ArrayList<Integer> YLocal = (ArrayList<Integer>) Y.clone();
+		}
+		
+		synchronized(XLock){
+			ArrayList<Integer> XLocal = (ArrayList<Integer>) X.clone();
+		}
+		
+		synchronized(widthLock){
+			ArrayList<Integer> widthLocal = (ArrayList<Integer>) Y.clone();
+		}
+		
+		synchronized(heightLock){
+			ArrayList<Integer> heightLocal = (ArrayList<Integer>) Y.clone();
+		}
+    	if (targets.length > 1) {
+    		for (int i = 0; i < targets.length; i++) {
+    			switch (t) {
+    			case Boiler:
+    				//TODO: Fix this stuff
+    				break;
+    			case Gear:
+    				if (Math.abs(X.get(i) - X.get(i+1)) <= 5) {
+    					T = (Y.get(targets[i]) + height.get(targets[i]) / 2);
+    					B = (Y.get(targets[i+1]) + height.get(targets[i+1]) / 2);
+    				} else if (Math.abs(X.get(i+1) - X.get(i+2)) <= 5) {
+    					T = (Y.get(targets[i]) + height.get(targets[i]) / 2);
+    					B = (Y.get(targets[i]) + height.get(targets[i]) / 2);
+    				} else {
+    					return height.get(i);
+    				}
+    				break;
+    			default:
     			}
-    			break;
-    		default:
     		}
     	}
     	h = T - B;
@@ -240,6 +294,21 @@ public class VisionSubsystem extends Subsystem {
     }
     
     public double getCenterX() {
+		synchronized(YLock){
+			ArrayList<Integer> YLocal = (ArrayList<Integer>) Y.clone();
+		}
+		
+		synchronized(XLock){
+			ArrayList<Integer> XLocal = (ArrayList<Integer>) X.clone();
+		}
+		
+		synchronized(widthLock){
+			ArrayList<Integer> widthLocal = (ArrayList<Integer>) Y.clone();
+		}
+		
+		synchronized(heightLock){
+			ArrayList<Integer> heightLocal = (ArrayList<Integer>) Y.clone();
+		}
     	Target t = getTarget();
     	if (t == Target.Boiler) {
     		return X.get(0) + width.get(0) / 2;
@@ -251,6 +320,21 @@ public class VisionSubsystem extends Subsystem {
     }
     
     public double getWidth() {
+		synchronized(YLock){
+			ArrayList<Integer> YLocal = (ArrayList<Integer>) Y.clone();
+		}
+		
+		synchronized(XLock){
+			ArrayList<Integer> XLocal = (ArrayList<Integer>) X.clone();
+		}
+		
+		synchronized(widthLock){
+			ArrayList<Integer> widthLocal = (ArrayList<Integer>) Y.clone();
+		}
+		
+		synchronized(heightLock){
+			ArrayList<Integer> heightLocal = (ArrayList<Integer>) Y.clone();
+		}
     	Target t = getTarget();
     	if (t == Target.Boiler) {
     		return width.get(0);
