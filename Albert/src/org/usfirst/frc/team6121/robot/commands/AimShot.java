@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class AimGear extends Command {
-	boolean m_right;
-
-    public AimGear(boolean right) {
+public class AimShot extends Command {
+	private boolean m_right;
+	
+    public AimShot(boolean right) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
     	requires(Robot.driveSubsystem);
@@ -27,7 +27,7 @@ public class AimGear extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
 		Robot.VISION.printVision();
-		Robot.driveSubsystem.toHeading(Robot.VISION.getTurn(), m_right, Target.Gear);
+		Robot.driveSubsystem.toHeading(Robot.VISION.getTurn(), m_right, Target.Boiler);
     }
 
     // Make this return true when this Command no longer needs to run execute()

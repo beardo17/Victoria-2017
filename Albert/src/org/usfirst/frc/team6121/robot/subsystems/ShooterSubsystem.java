@@ -2,7 +2,6 @@ package org.usfirst.frc.team6121.robot.subsystems;
 
 import org.usfirst.frc.team6121.robot.Robot;
 import org.usfirst.frc.team6121.robot.RobotMap;
-import org.usfirst.frc.team6121.robot.subsystems.VisionSubsystem.Target;
 
 import com.ctre.CANTalon.TalonControlMode;
 
@@ -16,28 +15,24 @@ public class ShooterSubsystem extends Subsystem {
 	
 	StringBuilder _sb = new StringBuilder();
 	int _loops = 0;
-
-//	private final double shootAngle = Math.toRadians(60);
-//	private final double y = 97;
-//    private final double g = 32.174 * 12;
-    private final double xShooterOffset = 0;
-    private final double xGearOffset = 0;
-    
-	VisionSubsystem v = Robot.VISION;
-			
-    public double aimValue() {
-    	double c = 0;
-    	if (v.getTarget() == Target.Boiler) {
-    		c = (v.getWidth() * xShooterOffset / 15) + v.getCenterX();
-    	} else if (v.getTarget() == Target.Gear) {
-    		c = (v.getWidth() * xGearOffset / 10.25) + v.getCenterX();
-    	}
-		return c;
-    }
+	
+	private static final int theta = 60;
+	private static final double g = 12 * 32.174;
+	private static final int y = 97;
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
+    }
+    
+    public double rpm() {
+    	double x = Robot.VISION.getDistance();
+    	if (x != 0) {
+    		return ((Math.sqrt((x * x * g)/(x * Math.sin(theta * 2) - 2 * y * Math.cos(theta) * Math.cos(theta))) / 12)
+    				* 60 / (Math.PI / 3));
+    	} else {
+    		return 1200;
+    	}
     }
     
     public void setSpeed(double a) {
@@ -49,10 +44,9 @@ public class ShooterSubsystem extends Subsystem {
     public void setRPM(double a) {
     	double motorOutput = RobotMap.shooterMotor.getOutputVoltage() / RobotMap.shooterMotor.getBusVoltage();
         
-        /* Speed mode */
-        double targetSpeed = a; /* 1500 RPM in either direction */
+        double targetSpeed = a;
         RobotMap.shooterMotor.changeControlMode(TalonControlMode.Speed);
-        RobotMap.shooterMotor.set(targetSpeed); /* 1500 RPM in either direction */
+        RobotMap.shooterMotor.set(targetSpeed);
         
         printShooter(targetSpeed, motorOutput);
     }

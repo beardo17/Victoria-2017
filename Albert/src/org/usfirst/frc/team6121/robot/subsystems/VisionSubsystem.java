@@ -109,8 +109,9 @@ public class VisionSubsystem extends Subsystem {
 	
 	private static final double bH = 10/12;
 	private static final double fovP = 240;
-	private static final double camVertAngle = 34.3; //TODO: Check the vertical camera angle
-	private static final int gearOff = 6; //TODO: Check gear offset
+	private static final double camVertAngle = 34.3;
+	private static final int gearOff = 6;
+	private static final int boilerOff = -4;
 	double tP;
 	
 	public enum Target {
@@ -138,7 +139,8 @@ public class VisionSubsystem extends Subsystem {
      * 
      * @return The target seen by the camera. Returns NONE if there is no valid target
      */
-    public Target getTarget() {
+    @SuppressWarnings("unchecked")
+	public Target getTarget() {
     	try {
     		Target target = Target.None;
     		double blRatio, bhRatio, bwRatio, blScore, bhScore, bwScore;
@@ -165,9 +167,9 @@ public class VisionSubsystem extends Subsystem {
     		
     		if (Robot.vision.filterContoursOutput().size() > 1) {
     			for (int i = 0; i < YLocal.size() - 1; i++) {
-    				blRatio = ((X.get(i) - X.get(i+1)) / X.get(i) + 1);
-    				bhRatio = (height.get(i) / (height.get(i+1) * 2));
-    				bwRatio = (width.get(i) / width.get(i+1));
+    				blRatio = ((XLocal.get(i) - XLocal.get(i+1)) / XLocal.get(i) + 1);
+    				bhRatio = (heightLocal.get(i) / (heightLocal.get(i+1) * 2));
+    				bwRatio = (widthLocal.get(i) / widthLocal.get(i+1));
     				
     				blScore = (100 - (100 * Math.abs(1-blRatio)));
     				bhScore = (100 - (100 * Math.abs(1-bhRatio)));
@@ -180,22 +182,22 @@ public class VisionSubsystem extends Subsystem {
     					break;
     				}
     			
-    				if (Math.abs(X.get(i) - X.get(i+1)) <= 5 && Robot.vision.filterContoursOutput().size() > 2) {
-    					if (((height.get(i) + height.get(i+1)) / 2 + (Y.get(i) + Y.get(i+1)) / 2) - (height.get(i+2) / 2 + Y.get(i+2)) >= 5) {
-    						gtRatio = ((Y.get(i) - Y.get(i+2)) / Y.get(i+2));
-    						gwRatio = (width.get(i) / width.get(i+2));
-    						ghRatio = (Y.get(i) - Y.get(i+1)) / (height.get(i+2));
+    				if (Math.abs(XLocal.get(i) - XLocal.get(i+1)) <= 5 && Robot.vision.filterContoursOutput().size() > 2) {
+    					if (((heightLocal.get(i) + heightLocal.get(i+1)) / 2 + (YLocal.get(i) + YLocal.get(i+1)) / 2) - (heightLocal.get(i+2) / 2 + YLocal.get(i+2)) >= 5) {
+    						gtRatio = ((YLocal.get(i) - YLocal.get(i+2)) / YLocal.get(i+2));
+    						gwRatio = (widthLocal.get(i) / widthLocal.get(i+2));
+    						ghRatio = (YLocal.get(i) - YLocal.get(i+1)) / (heightLocal.get(i+2));
     					}	
-    				} else if (Robot.vision.filterContoursOutput().size() > 2 && Math.abs(X.get(i+1) - X.get(i+2)) <= 5) {
-    					if (((height.get(i+1) + height.get(i+2)) / 2 + (Y.get(i+1) + Y.get(i+2)) / 2) - (height.get(i) / 2 + Y.get(i)) >= 5) {
-    						gtRatio = ((Y.get(i+1) - Y.get(i+2)) / Y.get(i));
-    						gwRatio = (width.get(i) / width.get(i+2));
-    						ghRatio = (Y.get(i+2) - Y.get(i+1)) / (height.get(i));
+    				} else if (Robot.vision.filterContoursOutput().size() > 2 && Math.abs(XLocal.get(i+1) - XLocal.get(i+2)) <= 5) {
+    					if (((heightLocal.get(i+1) + heightLocal.get(i+2)) / 2 + (YLocal.get(i+1) + YLocal.get(i+2)) / 2) - (heightLocal.get(i) / 2 + YLocal.get(i)) >= 5) {
+    						gtRatio = ((YLocal.get(i+1) - YLocal.get(i+2)) / YLocal.get(i));
+    						gwRatio = (widthLocal.get(i) / widthLocal.get(i+2));
+    						ghRatio = (YLocal.get(i+2) - YLocal.get(i+1)) / (heightLocal.get(i));
     					}	
     				} else {
-    					gtRatio = ((Y.get(i) - Y.get(i+1)) / height.get(i) + 1);
-    					gwRatio = (width.get(i) / width.get(i+1));
-    					ghRatio = (height.get(i) / height.get(i+1));
+    					gtRatio = ((YLocal.get(i) - YLocal.get(i+1)) / heightLocal.get(i) + 1);
+    					gwRatio = (widthLocal.get(i) / widthLocal.get(i+1));
+    					ghRatio = (heightLocal.get(i) / heightLocal.get(i+1));
     				}	
     			
     				gtScore = (100 - (100 * Math.abs(1-gtRatio)));
@@ -238,12 +240,12 @@ public class VisionSubsystem extends Subsystem {
      * @param t The current Target in view 
      * @return the height of the target
      */
-    public double getTargetHeight(Target t) {
+    @SuppressWarnings("unchecked")
+	public double getTargetHeight(Target t) {
     	double h = 0;
     	double T = 0, B = 0;
 		ArrayList<Integer> YLocal;
 		ArrayList<Integer> XLocal;
-		ArrayList<Integer> widthLocal;
 		ArrayList<Integer> heightLocal;
 		synchronized(YLock){
 			YLocal = (ArrayList<Integer>) Y.clone();
@@ -251,10 +253,6 @@ public class VisionSubsystem extends Subsystem {
 		
 		synchronized(XLock){
 			XLocal = (ArrayList<Integer>) X.clone();
-		}
-		
-		synchronized(widthLock){
-			widthLocal = (ArrayList<Integer>) Y.clone();
 		}
 		
 		synchronized(heightLock){
@@ -268,14 +266,14 @@ public class VisionSubsystem extends Subsystem {
     				//TODO: Fix this stuff
     				break;
     			case Gear:
-    				if (Math.abs(X.get(i) - X.get(i+1)) <= 5) {
-    					T = (Y.get(targets[i]) + height.get(targets[i]) / 2);
-    					B = (Y.get(targets[i+1]) + height.get(targets[i+1]) / 2);
-    				} else if (Math.abs(X.get(i+1) - X.get(i+2)) <= 5) {
-    					T = (Y.get(targets[i]) + height.get(targets[i]) / 2);
-    					B = (Y.get(targets[i]) + height.get(targets[i]) / 2);
+    				if (Math.abs(XLocal.get(i) - XLocal.get(i+1)) <= 5) {
+    					T = (YLocal.get(targets[i]) + heightLocal.get(targets[i]) / 2);
+    					B = (YLocal.get(targets[i+1]) + heightLocal.get(targets[i+1]) / 2);
+    				} else if (Math.abs(XLocal.get(i+1) - XLocal.get(i+2)) <= 5) {
+    					T = (YLocal.get(targets[i]) + heightLocal.get(targets[i]) / 2);
+    					B = (YLocal.get(targets[i]) + heightLocal.get(targets[i]) / 2);
     				} else {
-    					return height.get(i);
+    					return heightLocal.get(i);
     				}
     				break;
     			default:
@@ -288,28 +286,33 @@ public class VisionSubsystem extends Subsystem {
     
     public double getDistance() {
     	double d = 0;
-    	switch (getTarget()) {
-    	case Boiler:
-        	tP = getTargetHeight(Target.Boiler);
-        	d = bH * fovP / (2 * tP * Math.tan(camVertAngle));
-    		break;
-    	case Gear:
-        	tP = getTargetHeight(Target.Gear);
-        	d = bH * fovP / (2 * tP * Math.tan(camVertAngle));
-    		break;
-    	default:
+    	try {
+    		switch (getTarget()) {
+    		case Boiler:
+    			tP = getTargetHeight(Target.Boiler);
+    			d = bH * fovP / (2 * tP * Math.tan(camVertAngle));
+    			break;
+    		case Gear:
+    			tP = getTargetHeight(Target.Gear);
+    			d = bH * fovP / (2 * tP * Math.tan(camVertAngle));
+    			break;
+    		default:
+    		}
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		System.out.println(Y);
+    		System.out.println(X);
+    		System.out.println(width);
+    		System.out.println(height);
     	}
+    	printVision();
 		return d;
     }
     
-    public double getCenterX() {
-		ArrayList<Integer> YLocal;
+    @SuppressWarnings("unchecked")
+	public double getCenterX() {
 		ArrayList<Integer> XLocal;
 		ArrayList<Integer> widthLocal;
-		ArrayList<Integer> heightLocal;
-		synchronized(YLock){
-			YLocal = (ArrayList<Integer>) Y.clone();
-		}
 		
 		synchronized(XLock){
 			XLocal = (ArrayList<Integer>) X.clone();
@@ -319,54 +322,55 @@ public class VisionSubsystem extends Subsystem {
 			widthLocal = (ArrayList<Integer>) Y.clone();
 		}
 		
-		synchronized(heightLock){
-			heightLocal = (ArrayList<Integer>) Y.clone();
-		}
-		
     	Target t = getTarget();
     	if (t == Target.Boiler) {
-    		return X.get(0) + width.get(0) / 2;
+    		return XLocal.get(0) + widthLocal.get(0) / 2;
     	} else if (t == Target.Gear) {
-    		return (X.get(0) + width.get(0) / 2) * 1.025625;
+    		return (XLocal.get(0) + widthLocal.get(0) / 2) * 1.025625;
     	} else {
     		return 0;
     	}
     }
     
-    public double getWidth() {
-		ArrayList<Integer> YLocal;
-		ArrayList<Integer> XLocal;
+    @SuppressWarnings("unchecked")
+	public double getWidth() {
 		ArrayList<Integer> widthLocal;
-		ArrayList<Integer> heightLocal;
-		synchronized(YLock){
-			YLocal = (ArrayList<Integer>) Y.clone();
-		}
-		
-		synchronized(XLock){
-			XLocal = (ArrayList<Integer>) X.clone();
-		}
 		
 		synchronized(widthLock){
 			widthLocal = (ArrayList<Integer>) Y.clone();
 		}
 		
-		synchronized(heightLock){
-			heightLocal = (ArrayList<Integer>) Y.clone();
-		}
-		
     	Target t = getTarget();
     	if (t == Target.Boiler) {
-    		return width.get(0);
+    		return widthLocal.get(0);
     	} else if (t == Target.Gear) {
-    		return width.get(0) * 5.125;
+    		return widthLocal.get(0) * 5.125;
     	} else {
     		return 0;
     	}
     }
     
     public double getTurn() {
-    	return Math.asin((160 - getCenterX())/getDistance()) + 
-    			(90 - (Math.asin(Math.sqrt(getDistance()*getDistance() - gearOff*gearOff)/getDistance())));
+    	try {
+    		if (getTarget() == Target.Gear) {
+    			return Math.asin((160 - getCenterX())/getDistance()) + 
+    					(90 - (Math.asin(Math.sqrt(getDistance()*getDistance() - gearOff*gearOff)/getDistance())));
+    		} else {
+    			return Math.asin((160 - getCenterX())/getDistance()) + 
+        				(90 - (Math.asin(Math.sqrt(getDistance()*getDistance() - boilerOff*boilerOff)/getDistance())));
+    		}
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		System.out.println(Y);
+    		System.out.println(X);
+    		System.out.println(width);
+    		System.out.println(height);
+    	}
+    	return 0;
+    }
+    
+    public double getTimeToGear() {
+    	return getDistance() / 27 + 0.3;
     }
 	
 	public void initDefaultCommand() {

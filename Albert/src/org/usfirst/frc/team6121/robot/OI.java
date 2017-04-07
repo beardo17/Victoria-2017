@@ -2,6 +2,7 @@ package org.usfirst.frc.team6121.robot;
 
 import org.usfirst.frc.team6121.robot.commands.Agitate;
 import org.usfirst.frc.team6121.robot.commands.AimGear;
+import org.usfirst.frc.team6121.robot.commands.AimShot;
 import org.usfirst.frc.team6121.robot.commands.Drive;
 import org.usfirst.frc.team6121.robot.commands.Intake;
 import org.usfirst.frc.team6121.robot.commands.Shooting;
@@ -39,8 +40,11 @@ public class OI {
 		Button backFast = new JoystickButton(xboxController_1, RobotMap.Y_BUTTON);
 		backFast.whenPressed(new Drive(-1, 0, 0.75));
 		
-		Button gearButton = new JoystickButton(xboxController_2, RobotMap.A_BUTTON);
-		gearButton.whenPressed(new AimGear());
+		Button gearButton = new JoystickButton(xboxController_1, RobotMap.A_BUTTON);
+		gearButton.whenPressed(new AimGear(true));
+		
+		Button aimButton = new JoystickButton(xboxController_2, RobotMap.L_BUTTON);
+		aimButton.whileHeld(new AimShot(true));
 		
 		Button shooterButton = new JoystickButton(xboxController_2, RobotMap.R_BUTTON);
 		shooterButton.whileHeld(new Shooting());
@@ -48,10 +52,5 @@ public class OI {
 		Button agitatorButton = new JoystickButton(xboxController_2, RobotMap.Y_BUTTON);
 		agitatorButton.whileHeld(new Agitate());
 		
-		
-//		Button aimButton = new JoystickButton(xboxController_2, RobotMap.L_BUTTON);
-	
-	
-	
 	}
 }

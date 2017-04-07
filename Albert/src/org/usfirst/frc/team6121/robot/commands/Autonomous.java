@@ -1,5 +1,6 @@
 package org.usfirst.frc.team6121.robot.commands;
 
+import org.usfirst.frc.team6121.robot.Robot;
 import org.usfirst.frc.team6121.robot.subsystems.AutoSubsystem;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -30,12 +31,11 @@ public class Autonomous extends CommandGroup {
     					addSequential(new Shooting());
     					break;
     				case GEAR:
-    					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
-    					addSequential(new AimGear());
-    					addSequential(new DriveStraight(0.5, 0.4));
+    					addSequential(new DriveStraight(2.25, 0.45)); // To the peg
+    					addSequential(new AimGear(false));
+    					addSequential(new DriveStraight(1, 0.4));
     					addSequential(new WaitCommand(5));
     					addSequential(new DriveStraight(1, -0.25));
-//    					addSequential(new GearDeliver());
     					break;
     				case WIN: //TODO: Fix the going to the hopper and stuff
     					addSequential(new Drive(0.5, 0.0025569325, 1)); // To the peg
@@ -80,12 +80,11 @@ public class Autonomous extends CommandGroup {
 			case RIGHT:
 				switch(strat) {
 				case GEAR:
-					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
-					addSequential(new AimGear());
-					addSequential(new DriveStraight(0.5, 0.4));
+					addSequential(new DriveStraight(2.25, 0.45)); // To the peg
+					addSequential(new AimGear(true));
+					addSequential(new DriveStraight(1, 0.4));
 					addSequential(new WaitCommand(5));
 					addSequential(new DriveStraight(1, -0.25));
-//					addSequential(new GearDeliver());
 					break;
 				case SHOOT:
 					addSequential(new Drive(0.5, 0.6065306597, 1.25)); // Turn for the boiler
@@ -119,12 +118,11 @@ public class Autonomous extends CommandGroup {
 					addSequential(new Shooting());
 					break;
 				case GEAR:
-					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
-					addSequential(new AimGear());
-					addSequential(new DriveStraight(0.5, 0.4));
+					addSequential(new DriveStraight(2.25, 0.45)); // To the peg
+					addSequential(new AimGear(false));
+					addSequential(new DriveStraight(1, 0.4));
 					addSequential(new WaitCommand(5));
 					addSequential(new DriveStraight(1, -0.25));
-//					addSequential(new GearDeliver());
 					break;
 				case WIN:
 					addSequential(new Drive(0.5, 0.0025569325, 1));
@@ -165,16 +163,15 @@ public class Autonomous extends CommandGroup {
 			case RIGHT:
 				switch(strat) {
 				case GEAR:
-					addSequential(new DriveStraight(1.5, 0.45)); // To the peg   2487628502
-					addSequential(new AimGear());
-					addSequential(new DriveStraight(0.5, 0.4));
+					addSequential(new DriveStraight(2.25, 0.45)); // To the peg
+					addSequential(new AimGear(true));
+					addSequential(new DriveStraight(Robot.VISION.getTimeToGear(), 0.4));
 					addSequential(new WaitCommand(5));
 					addSequential(new DriveStraight(1, -0.25));
-//					addSequential(new GearDeliver());
 					break;
 				case SHOOT:
 					addSequential(new Drive(0.5, -0.6065306597, 1.25)); // Turn for the boiler
-//					addSequential(new AimShot());
+					addSequential(new AimShot(true));
 					addSequential(new Shooting());
 					break;
 				case WIN:
@@ -200,4 +197,8 @@ public class Autonomous extends CommandGroup {
     	}
     	
     }
+//    
+//    public double getTimeToGear() {
+//    	return Robot.VISION.getTimeToGear();
+//    }
 }
