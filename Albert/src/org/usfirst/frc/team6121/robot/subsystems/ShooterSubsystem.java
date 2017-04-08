@@ -42,13 +42,13 @@ public class ShooterSubsystem extends Subsystem {
     }
     
     public void setRPM(double a) {
-    	double motorOutput = RobotMap.shooterMotor.getOutputVoltage() / RobotMap.shooterMotor.getBusVoltage();
+//    	double motorOutput = RobotMap.shooterMotor.getOutputVoltage() / RobotMap.shooterMotor.getBusVoltage();
         
         double targetSpeed = a;
         RobotMap.shooterMotor.changeControlMode(TalonControlMode.Speed);
         RobotMap.shooterMotor.set(targetSpeed);
         
-        printShooter(targetSpeed, motorOutput);
+//        printShooter(targetSpeed, motorOutput);
     }
     
     public void printShooter(double targetSpeed, double motorOutput) {

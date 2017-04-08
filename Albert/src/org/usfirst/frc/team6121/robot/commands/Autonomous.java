@@ -55,7 +55,7 @@ public class Autonomous extends CommandGroup {
 			case MID:
 				switch(strat) {
 				case GEAR:
-					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
+					addSequential(new DriveStraight(2.5, 0.3)); // To the peg
 					addSequential(new WaitCommand(5));
 					addSequential(new DriveStraight(1, -0.25));
 					break;
@@ -139,7 +139,7 @@ public class Autonomous extends CommandGroup {
 			case MID:
 				switch(strat) {
 				case GEAR:
-					addSequential(new DriveStraight(1.5, 0.45)); // To the peg
+					addSequential(new DriveStraight(2.5, 0.3)); // To the peg
 					addSequential(new WaitCommand(5));
 					addSequential(new DriveStraight(1, -0.25));
 					break;
@@ -165,7 +165,7 @@ public class Autonomous extends CommandGroup {
 				case GEAR:
 					addSequential(new DriveStraight(2.25, 0.45)); // To the peg
 					addSequential(new AimGear(true));
-					addSequential(new DriveStraight(Robot.VISION.getTimeToGear(), 0.4));
+//					addSequential(new DriveStraight(Robot.VISION.getTimeToGear(), 0.4));
 					addSequential(new WaitCommand(5));
 					addSequential(new DriveStraight(1, -0.25));
 					break;

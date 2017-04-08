@@ -17,6 +17,8 @@ public class DriveSubsystem extends Subsystem {
 
 	/** Constant for driving straight **/
 	private static final double Kp = 0.05;
+	/** Drive straight constant **/
+	private static final double Kdriveturn = 0.35;
 	
 	/**
 	 * The primary driving command. Uses arcade drive and a Turbo Trigger for full speed.
@@ -65,30 +67,24 @@ public class DriveSubsystem extends Subsystem {
      * Uses the turn method to turn the robot to a given heading. Make sure to reset the gyro before using
      * @param h The heading to go to
      * @param right If true, begins by turning to the right first
+     * @param t The Target it is looking for
      */
-    public void toHeading(double h, boolean right, Target t) {
+    public void toHeading(double h, boolean right) {
+    	System.out.println("Going to Heading...");
     	double x = RobotMap.gyro.getAngle();
     	SmartDashboard.putNumber("Gyro Heading: ", x);
-    	if (t == Target.Gear && Robot.VISION.getTarget() == t) {
+    	if (Robot.VISION.getTarget() != Target.None) {
     		if (x - h > 0.5) {
-    			turn(0.25, -0.25);
+    			turn(Kdriveturn, -Kdriveturn);
     		} else if (x - h < 0.5) {
-    			turn(-0.25, 0.25);
-    		} else {
-    			turn(0, 0);
-    		}
-    	} else if (t == Target.Boiler && Robot.VISION.getTarget() == t) {
-    		if (x - h > 0.5) {
-    			turn(0.25, -0.25);
-    		} else if (x - h < 0.5) {
-    			turn(-0.25, 0.25);
+    			turn(-Kdriveturn, Kdriveturn);
     		} else {
     			turn(0, 0);
     		}
     	} else if (right) {
-    		turn(0.25, -0.25);
+    		turn(Kdriveturn, -Kdriveturn);
     	} else {
-    		turn(-0.25, 0.25);
+    		turn(-Kdriveturn, Kdriveturn);
     	}
     }
 

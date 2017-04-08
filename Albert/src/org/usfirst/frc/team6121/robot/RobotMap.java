@@ -95,7 +95,6 @@ public class RobotMap {
 		drive = new RobotDrive(flMotor, rlMotor, frMotor, rrMotor);
 		
 		gyro = new ADXRS450_Gyro();
-		gyro.reset();
 	
 	}
 }

@@ -16,14 +16,19 @@ public class Shooting extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	System.out.println("Shooting Initilization");
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	try {
-    		Robot.shooterSubsystem.setRPM(Robot.shooterSubsystem.rpm());
+//    		Robot.shooterSubsystem.setRPM(Robot.shooterSubsystem.rpm());
+//    		Robot.shooterSubsystem.setRPM(500);
+    		Robot.shooterSubsystem.setSpeed(0.4);
+    		System.out.println("Set shooter to an RPM");
     	} catch (Exception e) {
-    		e.printStackTrace();
+//    		e.printStackTrace();
+    		System.out.println(e.getMessage());
     		Robot.shooterSubsystem.setSpeed(0.4);
     	}
     }
