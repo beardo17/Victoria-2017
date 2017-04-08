@@ -2,7 +2,6 @@ package org.usfirst.frc.team6121.robot.subsystems;
 
 import org.usfirst.frc.team6121.robot.Robot;
 import org.usfirst.frc.team6121.robot.RobotMap;
-import org.usfirst.frc.team6121.robot.subsystems.VisionSubsystem.Target;
 
 import com.ctre.CANTalon.TalonControlMode;
 
@@ -17,14 +16,24 @@ public class ShooterSubsystem extends Subsystem {
 	StringBuilder _sb = new StringBuilder();
 	int _loops = 0;
 
-//	private final double shootAngle = Math.toRadians(60);
-//	private final double y = 97;
-//    private final double g = 32.174 * 12;
+	private final double theta = Math.toRadians(60);
+	private final double y = 97;
+    private final double g = 32.174 * 12;
     
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
         //setDefaultCommand(new MySpecialCommand());
+    }
+    
+    public int rpm() {
+    	double x = Robot.VISION.getDistance();
+    	if (x != 0) {
+    		return (int) ((Math.sqrt((x * x * g)/(x * Math.sin(theta * 2) - 2 * y * Math.cos(theta) * Math.cos(theta))) / 12)
+    				* 60 / (Math.PI / 3));
+    	} else {
+    		return 1200;
+    	}
     }
     
     public void setSpeed(double a) {
